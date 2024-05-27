@@ -1,0 +1,10 @@
+##############################################################################
+# used to think through snake memory implementation and assembler integration 
+##############################################################################
+sh -> register(18 downto 12) is location in queue, register(11 downto 0) is new location of head in vga mem 
+lt -> register(6 downto 0)
+
+vgaWE: "01" - write to snake mem
+vgaWE: "10" - write snake body to vga_mem
+vgaWE: "11" - delete snake tail in vga_mem
+load snake tail

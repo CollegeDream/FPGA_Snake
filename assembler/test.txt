@@ -1,0 +1,117 @@
+.data
+.code
+lascii $g0
+
+# initialize values
+add $u0, $z0, $z0
+add $u1, $z0, $z0
+add $u2, $z0, $z0
+add $u3, $z0, $z0
+add $u4, $z0, $z0
+
+add $g0, $z0, 5 # to loop initialGrow 5 times
+add $u2, $z0, 81 # starting location of snake
+# grow snake
+
+# print initial fruit
+add $p0, $z0, 1
+sll $p0, $p0, 12 # 1 bit shifted left indicates fruit placement
+add $s0, $z0, 220 # initial fruit spawn at index 220
+add $p0, $p0, $s0
+wsb $p0 # write fruit onto screen
+
+add $p0, $z0, 10
+
+@initialGrow
+add $u2, $u2, 1 # snake head location - increment by one each loop
+sll $u3, $u0, 12 # bits downto 12 indicate where to place the next head in the queue
+add $u3, $u3, $u2 # last bits signify snake head location
+sh $u3 # store snake head in snake mem
+wsb $u2 # write the snake body created
+add $u0, $u0, 1 # increment snake head pointer by 1
+sub $g0, $g0, 1 # i-- for loop
+bgtz $g0, initialGrow # continue looping
+
+add $g0, $z0, $z0 # clear out $g0
+add $g1, $z0, 119 # w code
+add $g2, $z0, 97  # a code
+add $g3, $z0, 115 # s code
+add $g4, $z0, 100 # d code
+add $g5, $z0, 1 # initial movement of snake is right
+
+@gameLoop
+lascii $g6 # grab ascii output from keyboard
+# match ascii keyboard to movement change
+beq $g6, $g1, handleUp
+beq $g6, $g2, handleLeft
+beq $g6, $g3, handleDown
+beq $g6, $g4, handleRight
+jump moveSnake # no valid input, continue moving in same direction
+
+@handleUp
+sub $g5, $z0, 80 # subtracting 80 indeces moves the snake up one space
+jump moveSnake
+
+@handleLeft
+sub $g5, $z0, 1 # subtracting 1 index moves the snake right one space
+jump moveSnake
+
+@handleDown
+add $g5, $z0, 80 # adding 80 indeces moves the snake down one space
+jump moveSnake
+
+@handleRight
+add $g5, $z0, 1 # adding 1 index moves the snake right one
+jump moveSnake
+
+@moveSnake
+#grow snake
+add $u2, $u2, $g5 # snake head location
+sll $u3, $u0, 12 # bits downto 12 indicate where to place the next head in the queue
+add $u3, $u3, $u2 # last bits signify snake head location
+sh $u3 # store snake head in snake mem
+wsb $u2 # write the snake body created
+add $u0, $u0, 1 # increment snake head pointer by 1
+beq $u2, $s0, genFruit # generate new fruit if snake just ate fruit
+
+# decrease tail length - will only be accessed when snake does not eat
+lt $u4, $u1 # load tail location
+add $u1, $u1, 1 # increment tail pointer by one
+dst $u4 # delete snake tail at $u4
+sub $p0, $p0, 1 # subtract 1 from counter determining when to update new fruit location
+blez $p0, updateNewFruitLoc # need to update the next fruit spawn
+jump gameLoop # continue looping the game
+
+@updateNewFruitLoc
+add $p0, $z0, 10 # reset update new fruit location counter
+add $g0, $z0, $u4 # store the current tail location as value to base next fruit spawn off of
+jump gameLoop
+
+@genFruit
+add $s0, $g0, $z0 # temporarily store $g0 (next fruit spawn reference) into $s0
+add $g0, $z0, 3 # g0 gets temp value 3
+blt $p0, $g0, subCase # if the update new fruit location counter is less than 3, spawn fruit below reference point
+add $s0, $s0, 320 # otherwise, spawn fruit 4 spaces above reference point
+jump genFruitTwo # jump to next function
+
+@subCase
+sub $s0, $s0, 320 # spawn fruit 4 spaces below reference point
+
+@genFruitTwo
+add $g0, $z0, 80 # g0 temporarily gets 80
+blt $s0, $g0, newFruitLocOutOfBounds # if trying to spawn fruit off screen up top, spawn fruit in middle of screen
+add $g0, $z0, 2319 # g0 temporarily gets 2319
+blt $g0, $s0, newFruitLocOutOfBounds # if trying to spawn fruit off screen below, spawn fruit in center of screen
+jump genFruitEnd
+
+@newFruitLocOutOfBounds
+add $s0, $z0, 1480 # set spawn location to center of screen
+
+@genFruitEnd
+add $p0, $z0, 1
+sll $p0, $p0, 12 # 1 shifted left 12 marks that this is a fruit being added
+add $p0, $p0, $s0 # add the new fruit spawn location
+wsb $p0 # write fruit into memory
+add $p0, $z0, 10 # reset update fruit spawn counter
+add $g0, $z0, $u4 # reset g0 to tail value
+jump gameLoop

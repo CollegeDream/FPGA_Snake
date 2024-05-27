@@ -1,0 +1,26 @@
+#########
+#Exclude all
+#########
+*
+!.gitignore
+!*.vhd
+!*.xdc
+!*.sh
+!*.tcl
+!*.md
+!sim_testbench
+!sim_testbench/*.vhd
+!img
+!img/*.png
+!img/*.jpg
+!*.dat
+!*.pdf
+!*.docx
+!*.s
+!*.txt
+!*.pptx
+!fp2alu
+!fp2datapath
+!assembler
+!diagrams
+!*.py

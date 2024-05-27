@@ -1,0 +1,98 @@
+add $g0, $z0, 5 # $g0 <- 5
+add $g1, $z0, 7 # $g1 <- 7
+add $g0, $g1, $g0 # $g0 <- 5 + 7 = 12 
+sub $g5, $g0, $g1 # $g5 <- g5 = 5
+sub $g5, $g0, 3 # g5 = 9 
+multh $g2, $g0, $g5 # $g2 = 0
+add $g0, $g0, 6000 # g0 = 6012
+multh $g3, $g0, 100 # $g3 = 0
+add $g3, $g3, 13 # $g3 = 13
+multl $g4, $g5, $g1 # $g4 = 63
+multl $g4, $g5, 8 # $g4 = 72
+slr $g3, $g3, 2 # $g3 = 3
+slr $g3, $g3, 1 # $g3 = 1
+xor $g5, $g5, $g1 # g5 = 14
+xor $g1, $g5, 15 #g1 = 1
+and $g1, $g3, $g5 # g1 = 0
+and $g0, $g5, 10 # g0 = 10
+or $g4, $g1, $g5 # g4 = 14
+or $g0, $g4, 1 # g0 = 15 
+sub $g0, $z0, 2 # g1 = -2
+nor $g4, $g0, $g1 #g4 = 1
+nor $g0, $g0, 3 # $g0 = 0
+nand $g6, $g4, $g0 # g6 = 15
+nand $g3, $g6, 10 # g3 =  5
+slt $g2, $g3, $g6 #g2 = 1
+slt $g2, $g6, 7 # g2 = 0 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+lw $g0, donkey 
+add $g0, $g0, 1
+sw $g0, donkey # 0101 1000 0100 00 0000 ... 1 ->  58400000 not 5c400000
+add $g0, $z0, 0
+@beg
+add $g0, $g0, 5
+add $g1, $z0, 5
+beq $g0, $g1, branchOne # should be taken  
+add $g2, $g2, 1
+@branchOne
+add $g0, $g0, 5
+beq $g0, $g1, end # shouldn't be taken
+
+add $g0, $z0, 5
+add $g1, $z0, 6
+bne $g0, $g1, branchTwo # should be taken
+add $g2, $g2, 1
+@branchTwo
+add $g0, $g0, 1
+bne $g0, $g1, end # shouldn't be taken
+
+add $g0, $z0, 5
+add $g1, $z0, 6 
+blt $g0, $g1, branchThree # should be taken
+add $g2, $g2, 1
+@branchThree
+add $g0, $g0, 1
+blt $g0, $g1, end # shouldn't be taken
+
+sub $g0, $z0, 2
+blez $g0, branchFour # should be taken
+add $g2, $g2, 1
+@branchFour
+add $g0, $g0, 3
+blez $g0, end # shouldn't be taken
+
+add $g0, $z0, 1
+bgtz $g0, branchFive # should be taken
+add $g2, $g2, 1
+@branchFive
+sub $g0, $g0, 1
+bgtz $g0, end # shouldn't be taken
+add $g4, $z0, 1
+@end
+jump beg #0110 1010 0100 0000 0000 -> 6a400000
+add $g5, $z0, 1
+
+
+
+
+
+
+# decrease tail length
+lt $u4, $u1
+add $u1, $u1, 1
+dst $u4

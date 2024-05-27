@@ -1,0 +1,12 @@
+.data
+var1 .word 12
+var2 .word 127
+
+.code
+@beg
+add $g0, $z0, 5
+add $g1, $z0, 5
+beq $g0, $g1, end
+add $g0, $g0, 1
+@end
+add $g0, $g0, 5
